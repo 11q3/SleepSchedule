@@ -1,74 +1,99 @@
 package com.example.myapplication
 
-import android.content.pm.PackageManager
+import android.database.sqlite.SQLiteDatabase
+import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
+import android.os.Environment
+import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import android.Manifest
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.nio.file.Paths
 
 class MainActivity : AppCompatActivity() {
-
-    private val REQUEST_CODE_PERMISSIONS = 100
-    private val PERMISSIONS_REQUIRED = arrayOf(
-        Manifest.permission.READ_EXTERNAL_STORAGE,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE
-    )
-
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-            ContextCompat.checkSelfPermission(this, Manifest.permission.MANAGE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        copyFile()
 
-            ActivityCompat.requestPermissions(this, PERMISSIONS_REQUIRED, REQUEST_CODE_PERMISSIONS)
-        } else {
-            copyFileFromExternalAppToLocalDirectory()
-        }
+        val fileContent = readFile(getDatabasePath("Gadgetbridge.db"))
+        findViewById<TextView>(R.id.fileContentTextView).text = fileContent
     }
 
-    private fun copyFileFromExternalAppToLocalDirectory(): Boolean {
-        val externalFilePath = "/storage/emulated/0/Download/Gadgetbridge.db (5)"
-        val externalFile = File(externalFilePath)
-        if (!externalFile.exists()) {
-            println("External file does not exist.")
-            return false
-        }
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun copyFile() {
+        val downloadsPath = Paths.get(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString(),
+            "Gadgetbridge.db (5)"
+        )
 
-        val localDirectoryPath = filesDir.parentFile.path
-        val localDirectory = File(localDirectoryPath)
+        try {
+            val localPath = getDatabasePath("Gadgetbridge.db")
 
-        if (!localDirectory.exists()) {
-            println("Local directory does not exist.")
-            return false
-        }
+            val inputStream = FileInputStream(downloadsPath.toFile())
 
-        val localFile = File(localDirectory, externalFile.name)
-        return try {
-            externalFile.copyTo(localFile, overwrite = true)
+            val outputStream = FileOutputStream(localPath)
+
+            inputStream.copyTo(outputStream)
+
+            inputStream.close()
+            outputStream.close()
+
             println("File copied successfully.")
-            true
-        } catch (e: Exception) {
+        } catch (e: IOException) {
             println("Failed to copy file: ${e.message}")
-            false
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permissions granted, proceed with your normal app logic
-                copyFileFromExternalAppToLocalDirectory()
-            } else {
-                // Permissions denied, show a message and close the app
-                Toast.makeText(this, "Permissions denied, closing the app", Toast.LENGTH_SHORT).show()
-                finish()
+    private fun readFile(filePath: File): String {
+        if (!filePath.exists()) {
+            return "File not found."
+        }
+
+        val database = SQLiteDatabase.openDatabase(filePath.path, null, SQLiteDatabase.OPEN_READONLY)
+
+        val tableNames = mutableListOf<String>()
+        val cursor = database.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null)
+        while (cursor.moveToNext()) {
+            val tableName = cursor.getString(0)
+            if (tableName != null) {
+                tableNames.add(tableName)
             }
         }
+        cursor.close()
+
+        val fileContent = StringBuilder()
+        for (tableName in tableNames) {
+            fileContent.append("Table: $tableName\n")
+            val cursor2 = database.rawQuery("SELECT * FROM $tableName", null)
+            val columnNames = cursor2.columnNames
+            fileContent.append("Columns: ${columnNames.joinToString()}\n")
+            if (cursor2.moveToFirst()) {
+                do {
+                    val rowValues = mutableListOf<String>()
+                    for (columnName in columnNames) {
+                        val columnIndex = cursor2.getColumnIndex(columnName)
+                        if (columnIndex != -1) {
+                            rowValues.add(cursor2.getString(columnIndex) ?: "null")
+                        } else {
+                            rowValues.add("")
+                        }
+                    }
+                    fileContent.append("Row: ${rowValues.joinToString()}\n")
+                } while (cursor2.moveToNext())
+            } else {
+                fileContent.append("Table is empty.\n")
+            }
+            cursor2.close()
+        }
+
+        database.close()
+
+        return fileContent.toString()
     }
 }
