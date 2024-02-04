@@ -1,50 +1,39 @@
 package com.example.myapplication
 
 import android.database.sqlite.SQLiteDatabase
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.Environment.getExternalStoragePublicDirectory
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.io.IOException
-import java.nio.file.Paths
+import java.nio.file.Path
 
 class MainActivity : AppCompatActivity() {
-    @RequiresApi(Build.VERSION_CODES.O)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        copyFile()
+        val downloadsPath = getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            .toPath()
+            .resolve("Gadgetbridge.db (5)")
+        copyFile(downloadsPath)
 
         val fileContent = readFile(getDatabasePath("Gadgetbridge.db"))
         findViewById<TextView>(R.id.fileContentTextView).text = fileContent
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun copyFile() {
-        val downloadsPath = Paths.get(
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString(),
-            "Gadgetbridge.db (5)"
-        )
-
+    private fun copyFile(downloadPath: Path) {
         try {
             val localPath = getDatabasePath("Gadgetbridge.db")
+            downloadPath.toFile().inputStream().use { input ->
+                localPath.outputStream().use { output ->
+                    input.copyTo(output)
+                }
 
-            val inputStream = FileInputStream(downloadsPath.toFile())
-
-            val outputStream = FileOutputStream(localPath)
-
-            inputStream.copyTo(outputStream)
-
-            inputStream.close()
-            outputStream.close()
-
-            println("File copied successfully.")
+            }
         } catch (e: IOException) {
             println("Failed to copy file: ${e.message}")
         }
@@ -55,18 +44,20 @@ class MainActivity : AppCompatActivity() {
             return "File not found."
         }
 
-        val database = SQLiteDatabase.openDatabase(filePath.path, null, SQLiteDatabase.OPEN_READONLY)
+        val database = SQLiteDatabase.openDatabase(
+            filePath.path, null, SQLiteDatabase.OPEN_READONLY)
 
-        val tableNames = mutableListOf<String>()
-        val cursor = database.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null)
-        while (cursor.moveToNext()) {
-            val tableName = cursor.getString(0)
-            if (tableName != null) {
-                tableNames.add(tableName)
+        val tableNames = database.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null)
+            .use { cursor ->
+                mutableListOf<String>().apply {
+                    while (cursor.moveToNext()) {
+                        val tableName = cursor.getString(0)
+                        if (tableName != null) {
+                            add(tableName)
+                        }
+                    }
+                }
             }
-        }
-        cursor.close()
-
         val fileContent = StringBuilder()
         for (tableName in tableNames) {
             fileContent.append("Table: $tableName\n")
@@ -91,7 +82,6 @@ class MainActivity : AppCompatActivity() {
             }
             cursor2.close()
         }
-
         database.close()
 
         return fileContent.toString()

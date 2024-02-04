@@ -26,11 +26,13 @@ It is a great way to manage your sleeping schedule, because otherwise you will l
 
 
 
-1. git clone current repository
+1) git clone current repository
 
-2. install gadgetbridge on your smartphone, and connect it to your mi band. You will probably need an auth key to pair your device to GadgetBridge, so google how to obtain it.
+2) install gadgetbridge on your smartphone, and connect it to your mi band. You will probably need an auth key to pair your device to GadgetBridge, so google how to obtain it.
 
-3. go to settings and grant permission to manage all files located on your device. Otherwise, the app will crash without any warning and will not ask for any permissions.
+3) in Gadgetbridge change export of db files to Downloads folder of your phone. This app is copying db with every launch. You can set up autoexport if you want to, otherwise app will work with last exported data.
+
+4) go to settings and grant permission to manage all files located on your device. Otherwise, the app will crash without any warning and will not ask for any permissions.
 
 
 
