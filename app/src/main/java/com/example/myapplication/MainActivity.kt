@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
 
         val downloadsPath = getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
             .toPath()
-            .resolve("Gadgetbridge.db (5)")
+            .resolve("Gadgetbridge.db")
         copyFile(downloadsPath)
 
         val fileContent = readFile(getDatabasePath("Gadgetbridge.db"))
@@ -28,9 +28,9 @@ class MainActivity : AppCompatActivity() {
     private fun copyFile(downloadPath: Path) {
         try {
             val localPath = getDatabasePath("Gadgetbridge.db")
-            downloadPath.toFile().inputStream().use { input ->
-                localPath.outputStream().use { output ->
-                    input.copyTo(output)
+            downloadPath.toFile().inputStream().use {
+                input -> localPath.outputStream().use {
+                    output -> input.copyTo(output)
                 }
 
             }
@@ -53,14 +53,12 @@ class MainActivity : AppCompatActivity() {
                     while (cursor.moveToNext()) {
                         val tableName = cursor.getString(0)
                         if (tableName != null) {
-                            add(tableName)
-                        }
-                    }
-                }
-            }
+                            add(tableName) } } } }
+
         val fileContent = StringBuilder()
+
         for (tableName in tableNames) {
-            fileContent.append("Table: $tableName\n")
+            fileContent.append("\nTable: $tableName\n\n")
             val cursor2 = database.rawQuery("SELECT * FROM $tableName", null)
             val columnNames = cursor2.columnNames
             fileContent.append("Columns: ${columnNames.joinToString()}\n")
