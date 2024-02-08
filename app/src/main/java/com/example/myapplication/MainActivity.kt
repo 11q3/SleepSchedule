@@ -9,9 +9,11 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import java.io.File
 import java.io.IOException
+import java.lang.reflect.Array
 import java.nio.file.Path
 import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlin.Array as Array1
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,7 +43,6 @@ class MainActivity : AppCompatActivity() {
             println("Failed to copy file: ${e.message}")
         }
     }
-
     private fun readFile(filePath: File): String {
         if (!filePath.exists()) { return "File not found." }
 
@@ -63,13 +64,15 @@ class MainActivity : AppCompatActivity() {
         if (!cursor2.moveToFirst()) {
             fileContent.append("Table is empty or no rows with sleep > 0.\n")
         }
-
+        val timestampsList = mutableListOf<Long>()
         do {
             val rowValues = mutableListOf<String>()
             for (columnName in columnNames) {
                 val columnIndex = cursor2.getColumnIndex(columnName)
                 if (columnIndex != -1) {
                     if (columnName == "TIMESTAMP") {
+                        timestampsList.add(cursor2.getLong(columnIndex))
+
                         val formattedTimestamp = getFormattedDateTime(cursor2.getLong(columnIndex))
                         rowValues.add(formattedTimestamp)
                     } else {
@@ -82,10 +85,42 @@ class MainActivity : AppCompatActivity() {
             fileContent.append("${rowValues.joinToString(",    ")} \n")
         } while (cursor2.moveToNext())
 
+
+        var sleepPeriods = mutableListOf<String>()
+
+
+        var sleepPeriod = mutableListOf<Long>()
+        var currentTimestamp = timestampsList.first()
+        var previousTimestamp: Long = Long.MAX_VALUE
+
+        for (i in 0 until timestampsList.size) {
+            currentTimestamp = timestampsList.elementAt(i)
+            if(i == 0) {
+                sleepPeriod.add(currentTimestamp)
+                previousTimestamp = timestampsList.elementAt(0)
+                continue
+            }
+            if(previousTimestamp - currentTimestamp > 60) {
+                sleepPeriod.add(timestampsList.elementAt(i-1))
+
+                val firstElement = sleepPeriod.elementAt(1)
+                val secondElement = sleepPeriod.elementAt(0)
+
+                val sdfsdf = mutableListOf(getFormattedDateTime(firstElement),
+                    getFormattedDateTime(secondElement)) + "\n"
+                sleepPeriods.add(sdfsdf.toString())
+                sleepPeriod.clear()
+
+                sleepPeriod.add(timestampsList.elementAt(i))
+
+            }
+            previousTimestamp = timestampsList.elementAt(i)
+        }
+
         cursor2.close()
         database.close()
 
-        return fileContent.toString()
+        return sleepPeriods.toString()
     }
 
     private fun getFormattedDateTime(timestamp: Long): String {
