@@ -87,34 +87,31 @@ class MainActivity : AppCompatActivity() {
 
 
         var sleepPeriods = mutableListOf<String>()
+        var sleepPeriod = mutableListOf<String>()
 
+        var periodStart = timestampsList[0]
+        sleepPeriod.add(getFormattedDateTime(periodStart))
 
-        var sleepPeriod = mutableListOf<Long>()
-        var currentTimestamp = timestampsList.first()
-        var previousTimestamp: Long = Long.MAX_VALUE
+        var periodEnd:Long
 
-        for (i in 0 until timestampsList.size) {
-            currentTimestamp = timestampsList.elementAt(i)
-            if(i == 0) {
-                sleepPeriod.add(currentTimestamp)
-                previousTimestamp = timestampsList.elementAt(0)
-                continue
+        var current:Long
+        var next:Long
+
+        for (i in 0..<timestampsList.size-1) {
+            current = timestampsList[i]
+            next = timestampsList[i+1]
+
+            if(current-next>60) {
+                periodEnd = current
+                sleepPeriod.add(getFormattedDateTime(periodEnd))
             }
-            if(previousTimestamp - currentTimestamp > 60) {
-                sleepPeriod.add(timestampsList.elementAt(i-1))
 
-                val firstElement = sleepPeriod.elementAt(1)
-                val secondElement = sleepPeriod.elementAt(0)
-
-                val sdfsdf = mutableListOf(getFormattedDateTime(firstElement),
-                    getFormattedDateTime(secondElement)) + "\n"
-                sleepPeriods.add(sdfsdf.toString())
+            if(sleepPeriod.size==2) {
+                sleepPeriods.add(sleepPeriod.toString())
                 sleepPeriod.clear()
-
-                sleepPeriod.add(timestampsList.elementAt(i))
-
+                periodStart = next
+                sleepPeriod.add(getFormattedDateTime(periodStart))
             }
-            previousTimestamp = timestampsList.elementAt(i)
         }
 
         cursor2.close()
@@ -124,7 +121,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getFormattedDateTime(timestamp: Long): String {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("MM-dd HH:mm", Locale.getDefault())
         return dateFormat.format(timestamp * 1000)
     }
 }
