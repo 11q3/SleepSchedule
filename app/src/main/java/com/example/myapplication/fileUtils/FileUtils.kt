@@ -24,7 +24,9 @@ class FileUtils {
         }
 
         fun readFile(filePath: File): String {
-            if (!filePath.exists()) { return "File not found." }
+            if (!filePath.exists()) {
+                return "File not found."
+            }
 
             val database = SQLiteDatabase.openDatabase(
                 filePath.path, null, SQLiteDatabase.OPEN_READONLY)
@@ -83,7 +85,7 @@ class FileUtils {
                     sleepPeriods.add(sleepPeriod.toString())
                     sleepPeriod.clear()
                     periodStart = next
-                    sleepPeriod.add(getFormattedDateTime(periodStart))
+                    sleepPeriod.add(getFormattedDateTime(periodStart) + " ")
                 }
             }
 
@@ -92,7 +94,7 @@ class FileUtils {
 
         private fun getFormattedDateTime(timestamp: Long): String {
             val dateFormat = SimpleDateFormat("MM-dd HH:mm", Locale.getDefault())
-            return dateFormat.format(timestamp * 1000)
+            return dateFormat.format(timestamp * 1000) + "\n"
         }
     }
 }
