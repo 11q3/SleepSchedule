@@ -73,7 +73,7 @@ class FileUtils {
             var periodStart: Long? = null
 
             sleepPairs.forEachIndexed { _, (timestamp, sleepColumn) ->
-                if (sleepColumn > 0 && periodStart == null) {
+                if (sleepColumn >= 30 && periodStart == null) {
                     periodStart = timestamp
                 } else if (sleepColumn == 0 && periodStart != null) {
                     val periodEnd = timestamp + 60
@@ -82,7 +82,9 @@ class FileUtils {
                 }
             }
 
-            return getFormattedDateTime(sleepPeriods)
+            val filteredSleepPeriods = getFilteredSleepPeriods(sleepPeriods)
+
+            return getFormattedDateTime(filteredSleepPeriods)
         }
 
         private fun getFormattedDateTime(timestamps: MutableList<Pair<Long, Long>>): String {
@@ -97,6 +99,18 @@ class FileUtils {
             }
 
             return formattedTimestamps.joinToString("\n")
+        }
+
+        private fun getFilteredSleepPeriods(sleepPeriods: MutableList<Pair<Long, Long>>): MutableList<Pair<Long, Long>> {
+            val filteredSleepPeriods = mutableListOf<Pair<Long, Long>>()
+            for (sleepPeriod in sleepPeriods) {
+                val sleepPeriodDuration = sleepPeriod.first - sleepPeriod.second
+                if (sleepPeriodDuration >= 20 * 60) {
+                    filteredSleepPeriods.add(sleepPeriod)
+                }
+            }
+
+            return filteredSleepPeriods
         }
     }
 }
