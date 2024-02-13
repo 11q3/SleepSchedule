@@ -33,7 +33,7 @@ class FileUtils {
 
             val tableName = "HUAMI_EXTENDED_ACTIVITY_SAMPLE"
 
-            val sql = "SELECT TIMESTAMP, SLEEP FROM $tableName"
+            val sql = "SELECT TIMESTAMP, SLEEP FROM $tableName ORDER BY TIMESTAMP DESC"
 
             val cursor2 = database.rawQuery(sql, null)
 
@@ -66,37 +66,41 @@ class FileUtils {
             return sleepPairs
         }
 
-        private fun getSleepPeriods(sleepPairs: MutableList<Pair<Long, Int>>): MutableList<Pair<Long, Long>> {
+        private fun getSleepPeriods(sleepPairs: MutableList<Pair<Long, Int>>): String { //MutableList<Pair<Long, Long>>
             val sleepPeriods = mutableListOf<Pair<Long, Long>>()
+
             var periodStart: Long? = null
             var periodEnd: Long? = null
 
             for (i in sleepPairs.indices) {
                 val (timestamp, sleepColumn) = sleepPairs[i]
 
-                if (sleepColumn > 0) { // periodStart
-                    if (periodStart == null) {
-                        periodStart = timestamp
-                    }
-                } else { // periodEnd
-                    if (periodStart != null) {
-                        periodEnd = timestamp
-                        sleepPeriods.add(Pair(periodStart, periodEnd))
-                        periodStart = null
-                    }
+                if (sleepColumn > 0 && periodStart == null) {
+                    periodStart = timestamp
+                }
+
+                if (sleepColumn == 0 && periodStart != null) {
+                    periodEnd = timestamp+60
+
+                    sleepPeriods.add(Pair(periodStart, periodEnd))
+                    periodStart = null
                 }
             }
 
-            if (periodStart != null) { // handle last sleepPeriod if it doesn't have periodEnd
-                sleepPeriods.add(Pair(periodStart, sleepPairs.last().first))
-            }
-
-            return sleepPeriods
+            return getFormattedDateTime(sleepPeriods)
         }
 
-        private fun getFormattedDateTime(timestamp: Long): String {
+        private fun getFormattedDateTime(timestamps: MutableList<Pair<Long, Long>>): String {
             val dateFormat = SimpleDateFormat("MM-dd HH:mm", Locale.getDefault())
-            return dateFormat.format(timestamp * 1000) + "\n"
+            val formattedTimestamps = mutableListOf<String>()
+
+            for ((end, start) in timestamps) {
+                val formattedStart = dateFormat.format(start * 1000)
+                val formattedEnd = dateFormat.format(end * 1000)
+                formattedTimestamps.add("$formattedStart - $formattedEnd\n")
+            }
+
+            return formattedTimestamps.joinToString("\n")
         }
     }
 }
