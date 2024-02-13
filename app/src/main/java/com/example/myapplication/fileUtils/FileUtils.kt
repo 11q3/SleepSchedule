@@ -33,12 +33,12 @@ class FileUtils {
 
             val tableName = "HUAMI_EXTENDED_ACTIVITY_SAMPLE"
 
-            val sql = "SELECT TIMESTAMP, SLEEP FROM $tableName WHERE SLEEP > 0 ORDER BY TIMESTAMP DESC"
+            val sql = "SELECT TIMESTAMP, SLEEP FROM $tableName"
 
             val cursor2 = database.rawQuery(sql, null)
 
             return if (cursor2.moveToFirst()) {
-                val timestampsList = getTimestampsList(cursor2)
+                val timestampsList = getSleepPairsList(cursor2)
                 val sleepPeriods = getSleepPeriods(timestampsList)
 
                 cursor2.close()
@@ -52,41 +52,43 @@ class FileUtils {
             }
         }
 
-        private fun getTimestampsList(cursor2: Cursor): MutableList<Long> {
-            val timestampsList = mutableListOf<Long>()
+        private fun getSleepPairsList(cursor2: Cursor): MutableList<Pair<Long, Int>> {
+            val sleepPairs = mutableListOf<Pair<Long, Int>>()
 
-            val columnIndex = cursor2.getColumnIndex("TIMESTAMP")
+            val timestampIndex = cursor2.getColumnIndex("TIMESTAMP")
+            val sleepIndex = cursor2.getColumnIndex("SLEEP")
             do {
-                timestampsList.add(cursor2.getLong(columnIndex))
+                val timestamp = cursor2.getLong(timestampIndex)
+                val sleep = cursor2.getInt(sleepIndex)
+                sleepPairs.add(Pair(timestamp, sleep))
             } while (cursor2.moveToNext())
 
-            return timestampsList
+            return sleepPairs
         }
 
-        private fun getSleepPeriods(timestampsList: MutableList<Long>): MutableList<String> {
-            val sleepPeriods = mutableListOf<String>()
-            val sleepPeriod = mutableListOf<String>()
+        private fun getSleepPeriods(sleepPairs: MutableList<Pair<Long, Int>>): MutableList<Pair<Long, Long>> {
+            val sleepPeriods = mutableListOf<Pair<Long, Long>>()
+            var periodStart: Long? = null
+            var periodEnd: Long? = null
 
-            var periodStart = timestampsList[0]
-            var periodEnd:Long
-            sleepPeriod.add(getFormattedDateTime(periodStart))
+            for (i in sleepPairs.indices) {
+                val (timestamp, sleepColumn) = sleepPairs[i]
 
-
-            for (i in 0..<timestampsList.size-1) {
-                val current = timestampsList[i]
-                val next = timestampsList[i+1]
-
-                if(current-next>60) {
-                    periodEnd = current
-                    sleepPeriod.add(getFormattedDateTime(periodEnd))
+                if (sleepColumn > 0) { // periodStart
+                    if (periodStart == null) {
+                        periodStart = timestamp
+                    }
+                } else { // periodEnd
+                    if (periodStart != null) {
+                        periodEnd = timestamp
+                        sleepPeriods.add(Pair(periodStart, periodEnd))
+                        periodStart = null
+                    }
                 }
+            }
 
-                if(sleepPeriod.size==2) {
-                    sleepPeriods.add(sleepPeriod.toString())
-                    sleepPeriod.clear()
-                    periodStart = next
-                    sleepPeriod.add(getFormattedDateTime(periodStart) + " ")
-                }
+            if (periodStart != null) { // handle last sleepPeriod if it doesn't have periodEnd
+                sleepPeriods.add(Pair(periodStart, sleepPairs.last().first))
             }
 
             return sleepPeriods
