@@ -44,7 +44,7 @@ class FileUtils {
                 cursor2.close()
                 database.close()
 
-                sleepPeriods.toString()
+                sleepPeriods
             } else {
                 cursor2.close()
                 database.close()
@@ -52,37 +52,32 @@ class FileUtils {
             }
         }
 
-        private fun getSleepPairsList(cursor2: Cursor): MutableList<Pair<Long, Int>> {
+        private fun getSleepPairsList(cursor: Cursor): MutableList<Pair<Long, Int>> {
             val sleepPairs = mutableListOf<Pair<Long, Int>>()
 
-            val timestampIndex = cursor2.getColumnIndex("TIMESTAMP")
-            val sleepIndex = cursor2.getColumnIndex("SLEEP")
-            do {
-                val timestamp = cursor2.getLong(timestampIndex)
-                val sleep = cursor2.getInt(sleepIndex)
+            val timestampIndex = cursor.getColumnIndex("TIMESTAMP")
+            val sleepIndex = cursor.getColumnIndex("SLEEP")
+
+            while (cursor.moveToNext()) {
+                val timestamp = cursor.getLong(timestampIndex)
+                val sleep = cursor.getInt(sleepIndex)
                 sleepPairs.add(Pair(timestamp, sleep))
-            } while (cursor2.moveToNext())
+            }
 
             return sleepPairs
         }
 
-        private fun getSleepPeriods(sleepPairs: MutableList<Pair<Long, Int>>): String { //MutableList<Pair<Long, Long>>
+        private fun getSleepPeriods(sleepPairs: MutableList<Pair<Long, Int>>): String {
             val sleepPeriods = mutableListOf<Pair<Long, Long>>()
 
             var periodStart: Long? = null
-            var periodEnd: Long? = null
 
-            for (i in sleepPairs.indices) {
-                val (timestamp, sleepColumn) = sleepPairs[i]
-
+            sleepPairs.forEachIndexed { _, (timestamp, sleepColumn) ->
                 if (sleepColumn > 0 && periodStart == null) {
                     periodStart = timestamp
-                }
-
-                if (sleepColumn == 0 && periodStart != null) {
-                    periodEnd = timestamp+60
-
-                    sleepPeriods.add(Pair(periodStart, periodEnd))
+                } else if (sleepColumn == 0 && periodStart != null) {
+                    val periodEnd = timestamp + 60
+                    sleepPeriods.add(Pair(periodStart!!, periodEnd))
                     periodStart = null
                 }
             }
@@ -94,9 +89,10 @@ class FileUtils {
             val dateFormat = SimpleDateFormat("MM-dd HH:mm", Locale.getDefault())
             val formattedTimestamps = mutableListOf<String>()
 
-            for ((end, start) in timestamps) {
-                val formattedStart = dateFormat.format(start * 1000)
-                val formattedEnd = dateFormat.format(end * 1000)
+            for ((periodEnd, periodStart) in timestamps) {
+                val formattedStart = dateFormat.format(periodStart * 1000)
+                val formattedEnd = dateFormat.format(periodEnd * 1000)
+
                 formattedTimestamps.add("$formattedStart - $formattedEnd\n")
             }
 
