@@ -40,12 +40,10 @@ class MainActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.fileContentTextView).text = fileContent
     }
 
-    private fun replaceFragment(fragment : Fragment): Boolean {
+    private fun replaceFragment(fragment : Fragment) {
         val fragmentManager = supportFragmentManager
         val fragmentsTransaction = fragmentManager.beginTransaction()
-        fragmentsTransaction.replace(R.id.fileContentTextView, fragment)
+        fragmentsTransaction.replace(R.id.bottomNavigationView, fragment)
         fragmentsTransaction.commit()
-
-        return true
     }
 }
