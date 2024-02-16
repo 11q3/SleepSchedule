@@ -1,10 +1,14 @@
 package com.example.myapplication
 
 import android.os.Bundle
+import android.os.Environment
+import android.os.Environment.getExternalStoragePublicDirectory
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import com.example.myapplication.fileUtils.FileUtils
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -13,10 +17,10 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [home.newInstance] factory method to
+ * Use the [Home.newInstance] factory method to
  * create an instance of this fragment.
  */
-class home : Fragment() {
+class Home : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -33,8 +37,16 @@ class home : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        val view = inflater.inflate(R.layout.fragment_home, container, false)
+
+        val fileContentTextView = view.findViewById<TextView>(R.id.fileContentTextView)
+
+        val filePath = getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).resolve("Gadgetbridge.db")
+        val fileContent = FileUtils.readFile(filePath)
+
+        fileContentTextView.text = fileContent
+
+        return view
     }
 
     companion object {
@@ -49,11 +61,15 @@ class home : Fragment() {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            home().apply {
+            Home().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)
+
+
                 }
+
+
             }
     }
 }
