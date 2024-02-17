@@ -1,14 +1,9 @@
 package com.example.myapplication
 
 import android.os.Bundle
-import android.os.Environment
-import android.os.Environment.getExternalStoragePublicDirectory
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.myapplication.databinding.ActivityMainBinding
-import com.example.myapplication.fileUtils.FileUtils.Companion.copyFile
-import com.example.myapplication.fileUtils.FileUtils.Companion.readFile
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,7 +17,7 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigationView.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.home -> replaceFragment(Home())
-                R.id.settings -> replaceFragment(settings())
+                R.id.settings -> replaceFragment(Settings())
             else -> {
             }
 
