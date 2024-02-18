@@ -6,20 +6,23 @@ import java.io.File
 import java.io.IOException
 import java.nio.file.Path
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Locale
 import kotlin.io.path.outputStream
 
 class FileUtils {
     companion object {
-        fun copyFile(downloadPath: Path, localPath: Path) {
-            try {
-                downloadPath.toFile().inputStream().use {
-                        input -> localPath.outputStream().use {
-                        output -> input.copyTo(output)
+        fun copyFile(downloadsPath: Path, localPath: Path): String {
+            return try {
+                downloadsPath.toFile().inputStream().use { input ->
+                    localPath.outputStream().use { output ->
+                        input.copyTo(output)
                     }
                 }
+
+                Calendar.getInstance().time.toString()
             } catch (e: IOException) {
-                println("Failed to copy file: ${e.message}")
+                "Failed to copy file: ${e.message}"
             }
         }
 

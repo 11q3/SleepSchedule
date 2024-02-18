@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.example.myapplication.fileUtils.FileUtils
+import java.io.File
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -46,6 +47,8 @@ class Home : Fragment() {
 
         fileContentTextView.text = fileContent
 
+
+        //TODO make code to copy and then read
         return view
     }
 
@@ -66,7 +69,7 @@ class Home : Fragment() {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)
 
-
+val file: File
                 }
 
 
