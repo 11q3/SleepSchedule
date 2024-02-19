@@ -6,21 +6,18 @@ import java.io.File
 import java.io.IOException
 import java.nio.file.Path
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Locale
 import kotlin.io.path.outputStream
 
 class FileUtils {
     companion object {
-        fun copyFile(downloadsPath: Path, localPath: Path): String {
-            return try {
+        fun copyFile(downloadsPath: Path, localPath: Path) {
+             try {
                 downloadsPath.toFile().inputStream().use { input ->
                     localPath.outputStream().use { output ->
                         input.copyTo(output)
                     }
                 }
-
-                Calendar.getInstance().time.toString()
             } catch (e: IOException) {
                 "Failed to copy file: ${e.message}"
             }
@@ -28,8 +25,7 @@ class FileUtils {
 
         fun readFile(filePath: File): String {
             if (!filePath.exists()) {
-                return "File not found."
-            }
+                return "File not found." }
 
             val database = SQLiteDatabase.openDatabase(
                 filePath.path, null, SQLiteDatabase.OPEN_READONLY)
@@ -41,8 +37,8 @@ class FileUtils {
             val cursor2 = database.rawQuery(sql, null)
 
             return if (cursor2.moveToFirst()) {
-                val timestampsList = getSleepPairsList(cursor2)
-                val sleepPeriods = getSleepPeriods(timestampsList)
+                val sleepPairsList = getSleepPairsList(cursor2)
+                val sleepPeriods = getSleepPeriods(sleepPairsList)
 
                 cursor2.close()
                 database.close()
@@ -76,9 +72,10 @@ class FileUtils {
             var periodStart: Long? = null
 
             sleepPairs.forEachIndexed { _, (timestamp, sleepColumn) ->
-                if (sleepColumn >= 0 && periodStart == null) {
+                if (sleepColumn > 0 && periodStart == null) {
                     periodStart = timestamp
-                } else if (sleepColumn == 0 && periodStart != null) {
+                } else if (sleepColumn == 0 //  && periodStart != null
+                    ) {
                     val periodEnd = timestamp + 60
                     sleepPeriods.add(Pair(periodStart!!, periodEnd))
                     periodStart = null

@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.myapplication.databinding.ActivityMainBinding
+import com.example.myapplication.fragments.Home
+import com.example.myapplication.fragments.Settings
 
 class MainActivity : AppCompatActivity() {
 
@@ -18,9 +20,7 @@ class MainActivity : AppCompatActivity() {
             when (it.itemId) {
                 R.id.home -> replaceFragment(Home())
                 R.id.settings -> replaceFragment(Settings())
-            else -> {
-            }
-
+            else -> { }
         }
             true
         }
