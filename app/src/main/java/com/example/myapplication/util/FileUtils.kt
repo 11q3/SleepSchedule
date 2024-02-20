@@ -1,4 +1,4 @@
-package com.example.myapplication.fileUtils
+package com.example.myapplication.util
 
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
@@ -74,7 +74,7 @@ class FileUtils {
             sleepPairs.forEachIndexed { _, (timestamp, sleepColumn) ->
                 if (sleepColumn > 0 && periodStart == null) {
                     periodStart = timestamp
-                } else if (sleepColumn == 0 //  && periodStart != null
+                } else if (sleepColumn == 0 && periodStart != null
                     ) {
                     val periodEnd = timestamp + 60
                     sleepPeriods.add(Pair(periodStart!!, periodEnd))
@@ -84,7 +84,9 @@ class FileUtils {
 
             val filteredSleepPeriods = getFilteredSleepPeriods(sleepPeriods)
 
-            return getFormattedDateTime(filteredSleepPeriods)
+            return getFormattedDateTime(sleepPeriods)
+
+            //TODO handle somehow cases when band isn`t on hand
         }
 
         private fun getFilteredSleepPeriods(sleepPeriods: MutableList<Pair<Long, Long>>): MutableList<Pair<Long, Long>> {

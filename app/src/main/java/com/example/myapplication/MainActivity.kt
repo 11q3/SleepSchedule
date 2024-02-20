@@ -1,13 +1,19 @@
 package com.example.myapplication
 
 import android.os.Bundle
+import android.os.Environment
+import android.os.Environment.getExternalStoragePublicDirectory
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import com.example.myapplication.databinding.ActivityMainBinding
 import com.example.myapplication.fragments.Home
 import com.example.myapplication.fragments.Settings
+import com.example.myapplication.util.FileUtils
+import java.nio.file.Paths
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var fileUtils: FileUtils.Companion
 
     private lateinit var binding : ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,6 +21,16 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         replaceFragment(Home())
+
+        fileUtils = FileUtils.Companion
+
+        val downloadsPath = getDatabasePath(Environment.DIRECTORY_DOWNLOADS)
+            .toPath()
+            .resolve("Gadgetbridge.db")
+
+        val localPath = getDatabasePath("Gadgetbridge.db").toPath()
+
+        fileUtils.copyFile(downloadsPath, localPath)
 
         binding.bottomNavigationView.setOnItemSelectedListener {
             when (it.itemId) {

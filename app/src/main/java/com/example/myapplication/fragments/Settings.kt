@@ -9,13 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.example.myapplication.R
-import com.example.myapplication.fileUtils.FileUtils
+import com.example.myapplication.util.FileUtils
 import java.nio.file.Files
 import java.nio.file.Paths
 
 class Settings : Fragment() {
-
-    private lateinit var fileUtils: FileUtils.Companion
 
     private lateinit var timeOfLastExportTextView: TextView
 
@@ -30,17 +28,11 @@ class Settings : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_settings, container, false)
 
-        fileUtils = FileUtils.Companion
         timeOfLastExportTextView = view.findViewById(R.id.timeOfLastExport)
 
-        val downloadsPath = getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS)
-            .toPath()
-            .resolve("Gadgetbridge.db")
-
         val appContext = requireContext().applicationContext
-
         val localPath = Paths.get(appContext.filesDir.path, "databases")
-        fileUtils.copyFile(downloadsPath, localPath)
+
         val timeOfLastExport =  Files.getAttribute(localPath, "basic:creationTime")
 
 
