@@ -21,17 +21,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         replaceFragment(Home())
 
         fileUtils = FileUtils.Companion
-
-        val downloadsPath = getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS)
-            .toPath()
-            .resolve("Gadgetbridge.db")
-
-        val localPath = getDatabasePath("Gadgetbridge.db").toPath()
-
-        fileUtils.copyFile(downloadsPath, localPath)
 
         binding.bottomNavigationView.setOnItemSelectedListener {
             when (it.itemId) {
@@ -42,12 +35,14 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
+        fileUtils.exportDatabase(this)
+
     }
 
-    private fun replaceFragment(fragment : Fragment) {
-        val fragmentManager = supportFragmentManager
-        val fragmentsTransaction = fragmentManager.beginTransaction()
-        fragmentsTransaction.replace(R.id.frame_layout, fragment)
-        fragmentsTransaction.commit()
+    private fun replaceFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction().apply {
+            replace(R.id.frame_layout, fragment)
+            commit()
+        }
     }
 }

@@ -7,10 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.example.myapplication.R
+import com.example.myapplication.fragments.base.BaseFragment
 import java.nio.file.Files
 import java.nio.file.Paths
 
-class Settings : Fragment() {
+class Settings : BaseFragment() {
 
     private lateinit var timeOfLastExportTextView: TextView
 
@@ -26,14 +27,7 @@ class Settings : Fragment() {
         val view = inflater.inflate(R.layout.fragment_settings, container, false)
 
         timeOfLastExportTextView = view.findViewById(R.id.timeOfLastExport)
-
-        val appContext = requireContext().applicationContext
-        val filePath = appContext.getDatabasePath("Gadgetbridge.db").toPath()
-
-        val timeOfLastExport =  Files.getAttribute(filePath, "basic:creationTime")
-
-
-        timeOfLastExportTextView.text = timeOfLastExport.toString()
+        timeOfLastExportTextView.text = databaseManager.getTimeOfLastExport()
 
         return view
     }

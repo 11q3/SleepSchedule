@@ -10,13 +10,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.example.myapplication.R
+import com.example.myapplication.db.DatabaseManager
+import com.example.myapplication.fragments.base.BaseFragment
 import com.example.myapplication.util.FileUtils
 import java.nio.file.Paths
 
-class Home : Fragment() {
-
-    private lateinit var fileUtils: FileUtils.Companion
-
+class Home : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let { }
@@ -27,15 +26,15 @@ class Home : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
-        fileUtils = FileUtils.Companion
 
         val fileContentTextView = view.findViewById<TextView>(R.id.fileContentTextView)
-        
-        val appContext = requireContext().applicationContext
-        val filePath = appContext.getDatabasePath("Gadgetbridge.db").toPath()
 
-        val fileContent = fileUtils.readFile(filePath.toFile())
+        //val appContext = requireContext().applicationContext
+        //val filePath = appContext.getDatabasePath("Gadgetbridge.db").toPath()
+
+        val fileContent = databaseManager.readDatabase()
         fileContentTextView.text = fileContent
+
 
         return view
     }
