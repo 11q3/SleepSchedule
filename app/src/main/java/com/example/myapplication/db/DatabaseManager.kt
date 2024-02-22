@@ -7,9 +7,14 @@ import java.nio.file.Files
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class DatabaseManager(private val context: Context) {
+class DatabaseManager(context: Context) {
+    private val databaseName = DatabaseConstants.DATABASE_NAME
+    private val sleepColumn = DatabaseConstants.SLEEP_COLUMN
+    private val timestampColumn = DatabaseConstants.TIMESTAMP_COLUMN
 
-    private val databasePath = context.getDatabasePath("Gadgetbridge.db").toPath()
+
+    private val databasePath = context.getDatabasePath(
+        databaseName).toPath()
 
     fun readDatabase(): String {
         if (!databasePath.toFile().exists()) {
@@ -44,8 +49,8 @@ class DatabaseManager(private val context: Context) {
     private fun getSleepPairsList(cursor: Cursor): MutableList<Pair<Long, Int>> {
         val sleepPairs = mutableListOf<Pair<Long, Int>>()
 
-        val timestampIndex = cursor.getColumnIndex("TIMESTAMP")
-        val sleepIndex = cursor.getColumnIndex("SLEEP")
+        val timestampIndex = cursor.getColumnIndex(timestampColumn)
+        val sleepIndex = cursor.getColumnIndex(sleepColumn)
 
         while (cursor.moveToNext()) {
             val timestamp = cursor.getLong(timestampIndex)
@@ -110,7 +115,6 @@ class DatabaseManager(private val context: Context) {
             Files.getAttribute(databasePath, "basic:creationTime").toString()
         } else {
             "File not found"
-
         }
     }
 }
