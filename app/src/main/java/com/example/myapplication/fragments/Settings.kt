@@ -1,15 +1,12 @@
 package com.example.myapplication.fragments
 
 import android.os.Bundle
-import android.os.Environment.DIRECTORY_DOWNLOADS
-import android.os.Environment.getExternalStoragePublicDirectory
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.example.myapplication.R
-import com.example.myapplication.util.FileUtils
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -31,9 +28,9 @@ class Settings : Fragment() {
         timeOfLastExportTextView = view.findViewById(R.id.timeOfLastExport)
 
         val appContext = requireContext().applicationContext
-        val localPath = Paths.get(appContext.filesDir.path, "databases")
+        val filePath = appContext.getDatabasePath("Gadgetbridge.db").toPath()
 
-        val timeOfLastExport =  Files.getAttribute(localPath, "basic:creationTime")
+        val timeOfLastExport =  Files.getAttribute(filePath, "basic:creationTime")
 
 
         timeOfLastExportTextView.text = timeOfLastExport.toString()

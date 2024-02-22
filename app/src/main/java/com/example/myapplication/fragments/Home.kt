@@ -30,17 +30,12 @@ class Home : Fragment() {
         fileUtils = FileUtils.Companion
 
         val fileContentTextView = view.findViewById<TextView>(R.id.fileContentTextView)
-
-
+        
         val appContext = requireContext().applicationContext
-        val filePath = Paths.get(appContext.filesDir.path, "databases")
+        val filePath = appContext.getDatabasePath("Gadgetbridge.db").toPath()
 
         val fileContent = fileUtils.readFile(filePath.toFile())
-
         fileContentTextView.text = fileContent
-
-
-        //TODO make this code to copy file, and only then to read
 
         return view
     }

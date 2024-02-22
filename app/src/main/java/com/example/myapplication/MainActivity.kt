@@ -2,6 +2,7 @@ package com.example.myapplication
 
 import android.os.Bundle
 import android.os.Environment
+import android.os.Environment.DIRECTORY_DOWNLOADS
 import android.os.Environment.getExternalStoragePublicDirectory
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContentProviderCompat.requireContext
@@ -24,7 +25,7 @@ class MainActivity : AppCompatActivity() {
 
         fileUtils = FileUtils.Companion
 
-        val downloadsPath = getDatabasePath(Environment.DIRECTORY_DOWNLOADS)
+        val downloadsPath = getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS)
             .toPath()
             .resolve("Gadgetbridge.db")
 
