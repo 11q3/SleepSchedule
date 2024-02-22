@@ -28,14 +28,4 @@ class Settings : BaseFragment() {
 
         return view
     }
-
-    companion object {
-        @JvmStatic
-        fun newInstance() =
-            Settings().apply {
-                arguments = Bundle().apply {
-
-                }
-            }
-    }
 }
