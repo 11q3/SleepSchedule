@@ -1,40 +1,34 @@
 package com.example.myapplication.bluetooth.presentation
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.bluetooth.BluetoothController
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
-import javax.inject.Inject
+import com.example.myapplication.bluetooth.presentation.BluetoothUIState
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
-@HiltViewModel
-class BluetoothViewModel @Inject constructor(
-    private val bluetoothController: BluetoothController
-): ViewModel() {
+class BluetoothViewModel(private val bluetoothController: BluetoothController) : ViewModel() {
+    val state = MutableLiveData<BluetoothUIState>()
 
-    private val _state = MutableStateFlow(BluetoothUIState())
-    val state = combine(
-        bluetoothController.scannedDevices,
-        bluetoothController.pairedDevices,
-        _state
-    ) {
-      scannedDevices, pairedDevices, state ->
-        state.copy(
-            scannedDevices = scannedDevices,
-            pairedDevices = pairedDevices
-        )
+    init {
+        getDevices()
+    }
 
-    }.stateIn(viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
-        _state.value)
-
+    private fun getDevices() {
+        viewModelScope.launch {
+            bluetoothController.scannedDevices.collect { scannedDevices ->
+                bluetoothController.pairedDevices.collect { pairedDevices ->
+                    state.value = BluetoothUIState(scannedDevices, pairedDevices)
+                }
+            }
+        }
+    }
 
     fun startScan() {
         bluetoothController.startDiscovery()
     }
+
     fun stopScan() {
         bluetoothController.stopDiscovery()
     }
