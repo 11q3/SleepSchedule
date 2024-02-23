@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import com.example.myapplication.R
 import com.example.myapplication.databinding.ActivityMainBinding
+import com.example.myapplication.fragments.Bluetooth
 import com.example.myapplication.fragments.Home
 import com.example.myapplication.fragments.Settings
 import com.example.myapplication.util.FileUtils
@@ -80,6 +81,7 @@ class MainActivity : AppCompatActivity() {
             when (it.itemId) {
                 R.id.home -> replaceFragment(Home())
                 R.id.settings -> replaceFragment(Settings())
+                R.id.bluetooth -> replaceFragment(Bluetooth())
                 else -> { }
             }
             true

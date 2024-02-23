@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.Bluetooth">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/pairedDevicesRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/scannedDevicesRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pairedDevicesRecyclerView" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/startScanButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start scan"
+        app:layout_constraintEnd_toStartOf="@+id/stopScanButton"
+        app:layout_constraintTop_toBottomOf="@id/scannedDevicesRecyclerView" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/stopScanButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stop scan"
+        app:layout_constraintStart_toEndOf="@+id/startScanButton"
+        app:layout_constraintTop_toBottomOf="@id/scannedDevicesRecyclerView" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

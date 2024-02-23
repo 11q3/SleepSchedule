@@ -9,9 +9,18 @@
         />
 
     <item
+        android:id="@+id/bluetooth"
+        android:title="Bluetooth"
+        android:icon="@drawable/baseline_bluetooth_24"
+
+        />
+
+    <item
         android:id="@+id/settings"
         android:title="Settings"
         android:icon="@drawable/baseline_access_time_24"
 
         />
+
+
 </menu>
