@@ -1,13 +1,16 @@
-package com.example.myapplication
+package com.example.myapplication.bluetooth.presentation
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.example.myapplication.R
 import com.example.myapplication.databinding.ActivityMainBinding
 import com.example.myapplication.fragments.Home
 import com.example.myapplication.fragments.Settings
 import com.example.myapplication.util.FileUtils
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var fileUtils: FileUtils.Companion
 
