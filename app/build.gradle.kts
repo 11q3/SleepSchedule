@@ -50,7 +50,6 @@ dependencies {
     implementation("com.google.dagger:dagger:2.50")
     implementation("androidx.hilt:hilt-common:1.2.0")
     implementation("com.google.dagger:hilt-android:2.49")
-    implementation("com.google.dagger:hilt-android-compiler:2.42")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

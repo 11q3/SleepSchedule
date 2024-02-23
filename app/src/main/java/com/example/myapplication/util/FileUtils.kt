@@ -12,11 +12,12 @@ class FileUtils {
         private const val databaseName = DatabaseConstants.DATABASE_NAME
         fun exportDatabase(context: Context) {
             val databasePath = context.getDatabasePath(databaseName).toPath()
-            val exportPath = Environment.getExternalStorageDirectory().toString() + "/" + databaseName
+            val exportPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                .toString() + "/" + databaseName
 
             try {
-                val inputStream = File(databasePath.toFile().path).inputStream()
-                val outputStream = FileOutputStream(exportPath)
+                val inputStream = File(exportPath).inputStream()
+                val outputStream = FileOutputStream(databasePath.toFile().path)
 
                 inputStream.copyTo(outputStream)
 
