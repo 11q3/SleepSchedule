@@ -8,14 +8,20 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
-import androidx.lifecycle.Observer
+import androidx.activity.OnBackPressedCallback
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.myapplication.R
 import com.example.myapplication.bluetooth.BTDevice
 import com.example.myapplication.bluetooth.data.chat.AndroidBluetoothController
 import com.example.myapplication.fragments.base.BaseFragment
-
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class Bluetooth : BaseFragment() {
 
@@ -37,24 +43,48 @@ class Bluetooth : BaseFragment() {
 
         val view = inflater.inflate(R.layout.fragment_bluetooth, container, false)
 
-        bluetoothViewModel.state.observe(viewLifecycleOwner, Observer { state ->
-            displayDevices(view.findViewById(R.id.pairedDevicesRecyclerView), state.pairedDevices)
-            displayDevices(view.findViewById(R.id.scannedDevicesRecyclerView), state.scannedDevices)
-        })
+        viewLifecycleOwner.let { owner ->
+            owner.lifecycle.coroutineScope.launch {
+                owner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    bluetoothViewModel.state.collectLatest { state ->
+                        displayDevices(view.findViewById(R.id.pairedDevicesRecyclerView), state.pairedDevices)
+                        displayDevices(view.findViewById(R.id.scannedDevicesRecyclerView), state.scannedDevices)
+                    }
+                }
+            }
 
-        view.findViewById<Button>(R.id.startScanButton).setOnClickListener {
-            bluetoothViewModel.startScan()
-        }
+            view.findViewById<Button>(R.id.startScanButton).setOnClickListener {
+                bluetoothViewModel.startScan()
+            }
 
-        view.findViewById<Button>(R.id.stopScanButton).setOnClickListener {
-            bluetoothViewModel.stopScan()
+            view.findViewById<Button>(R.id.stopScanButton).setOnClickListener {
+                bluetoothViewModel.stopScan()
+            }
+
+            owner.lifecycle.addObserver(object : LifecycleEventObserver {
+                override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+                    if (event == Lifecycle.Event.ON_STOP) {
+                        bluetoothViewModel.stopScan()
+                    }
+                }
+            })
+
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    bluetoothViewModel.stopScan()
+                }
+            })
         }
 
         return view
     }
 
     private fun displayDevices(listView: ListView, devices: List<BTDevice>) {
-        val adapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_list_item_1, devices.map { it.name })
+        val adapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_list_item_1)
+        devices.forEach { device ->
+            val name = device.name ?: "Unknown"
+            adapter.add(name)
+        }
         listView.adapter = adapter
     }
 }

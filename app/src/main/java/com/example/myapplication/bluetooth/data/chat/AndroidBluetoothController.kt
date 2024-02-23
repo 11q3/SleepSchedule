@@ -61,6 +61,10 @@ class AndroidBluetoothController(
     }
 
     override fun stopDiscovery() {
+        if(!hasPermission(Manifest.permission.BLUETOOTH_SCAN)) {
+            return
+        }
+
         bluetoothAdapter?.cancelDiscovery()
     }
 
