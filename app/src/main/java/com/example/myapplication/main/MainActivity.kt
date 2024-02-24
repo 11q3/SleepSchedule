@@ -1,4 +1,4 @@
-package com.example.myapplication.bluetooth.presentation
+package com.example.myapplication.main
 
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
@@ -11,10 +11,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.myapplication.R
 import com.example.myapplication.databinding.ActivityMainBinding
-import com.example.myapplication.fragments.Bluetooth
-import com.example.myapplication.fragments.Home
-import com.example.myapplication.fragments.Settings
-import com.example.myapplication.util.FileUtils
+import com.example.myapplication.presentation.view.fragments.Bluetooth
+import com.example.myapplication.presentation.view.fragments.Home
+import com.example.myapplication.presentation.view.fragments.Settings
+import com.example.myapplication.infrastructure.util.FileUtils
 
 
 

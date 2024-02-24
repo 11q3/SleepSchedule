@@ -1,9 +1,9 @@
-package com.example.myapplication.fragments.base
+package com.example.myapplication.presentation.view.fragments.base
 
 import android.content.Context
 import androidx.fragment.app.Fragment
-import com.example.myapplication.db.DatabaseManager
-import com.example.myapplication.util.FileUtils
+import com.example.myapplication.data.database.DatabaseManager
+import com.example.myapplication.infrastructure.util.FileUtils
 
 abstract class BaseFragment : Fragment() {
 

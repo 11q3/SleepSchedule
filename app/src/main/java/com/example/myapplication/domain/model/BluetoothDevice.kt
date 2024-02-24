@@ -1,4 +1,5 @@
-package com.example.myapplication.bluetooth
+package com.example.myapplication.domain.model
+
 
 typealias BTDevice = BluetoothDevice
 

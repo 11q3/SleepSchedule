@@ -1,4 +1,4 @@
-package com.example.myapplication.db
+package com.example.myapplication.data.database
 
 import android.content.Context
 import android.database.Cursor
@@ -11,7 +11,7 @@ class DatabaseManager(context: Context) {
     private val databaseName = DatabaseConstants.DATABASE_NAME
     private val sleepColumn = DatabaseConstants.SLEEP_COLUMN
     private val timestampColumn = DatabaseConstants.TIMESTAMP_COLUMN
-
+    private val tableName = DatabaseConstants.TABLE_NAME
 
     private val databasePath = context.getDatabasePath(
         databaseName).toPath()
@@ -24,8 +24,6 @@ class DatabaseManager(context: Context) {
         val database = SQLiteDatabase.openDatabase(
             databasePath.toFile().path, null, SQLiteDatabase.OPEN_READONLY
         )
-
-        val tableName = DatabaseConstants.TABLE_NAME
 
         val sql = "SELECT TIMESTAMP, SLEEP FROM $tableName ORDER BY TIMESTAMP DESC"
 

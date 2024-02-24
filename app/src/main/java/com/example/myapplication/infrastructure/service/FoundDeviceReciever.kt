@@ -1,4 +1,4 @@
-package com.example.myapplication.bluetooth.data.chat
+package com.example.myapplication.infrastructure.service
 
 import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
@@ -12,7 +12,7 @@ class FoundDeviceReceiver(
         when (intent?.action) {
             BluetoothDevice.ACTION_FOUND -> {
                 val device = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    intent?.getParcelableExtra(
+                    intent.getParcelableExtra(
                         BluetoothDevice.EXTRA_DEVICE,
                         BluetoothDevice::class.java
                     )

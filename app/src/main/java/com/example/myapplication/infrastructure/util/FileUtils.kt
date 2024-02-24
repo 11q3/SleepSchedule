@@ -1,8 +1,8 @@
-package com.example.myapplication.util
+package com.example.myapplication.infrastructure.util
 
 import android.content.Context
 import android.os.Environment
-import com.example.myapplication.db.DatabaseConstants
+import com.example.myapplication.data.database.DatabaseConstants
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException

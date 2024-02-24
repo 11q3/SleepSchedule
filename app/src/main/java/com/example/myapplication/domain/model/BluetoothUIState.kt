@@ -1,6 +1,4 @@
-package com.example.myapplication.bluetooth.presentation
-
-import com.example.myapplication.bluetooth.BTDevice
+package com.example.myapplication.domain.model
 
 data class BluetoothUIState(
     val scannedDevices: List<BTDevice> = emptyList(),

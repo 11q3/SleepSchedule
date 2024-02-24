@@ -1,8 +1,8 @@
-package com.example.myapplication.bluetooth.data.chat
+package com.example.myapplication.infrastructure.mapper
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
-import com.example.myapplication.bluetooth.BTDevice
+import com.example.myapplication.domain.model.BTDevice
 
 
 @SuppressLint("MissingPermission")

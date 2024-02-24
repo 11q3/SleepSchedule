@@ -1,4 +1,4 @@
-package com.example.myapplication.db
+package com.example.myapplication.data.database
 
 object DatabaseConstants {
     const val DATABASE_NAME = "Gadgetbridge.db"

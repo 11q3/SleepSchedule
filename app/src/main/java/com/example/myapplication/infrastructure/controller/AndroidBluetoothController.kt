@@ -1,4 +1,4 @@
-package com.example.myapplication.bluetooth.data.chat
+package com.example.myapplication.infrastructure.controller
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -7,35 +7,34 @@ import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import com.example.myapplication.bluetooth.BluetoothController
-import com.example.myapplication.bluetooth.BTDevice
+import com.example.myapplication.domain.model.BTDevice
+import com.example.myapplication.infrastructure.mapper.toBTDevice
+import com.example.myapplication.infrastructure.service.FoundDeviceReceiver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
+
 @SuppressLint("MissingPermission")
-class AndroidBluetoothController(
-    private val context: Context) : BluetoothController {
+class AndroidBluetoothController(private val context: Context) : BluetoothController {
 
     private val bluetoothManager by lazy {
         context.getSystemService(BluetoothManager::class.java)
     }
+
     private val bluetoothAdapter by lazy {
-        bluetoothManager?.adapter
+        bluetoothManager.adapter
     }
 
     private val _scannedDevices = MutableStateFlow<List<BTDevice>>(emptyList())
-
     override val scannedDevices: StateFlow<List<BTDevice>>
         get() = _scannedDevices.asStateFlow()
 
 
     private val _pairedDevices = MutableStateFlow<List<BTDevice>>(emptyList())
-
     override val pairedDevices: StateFlow<List<BTDevice>>
         get() = _pairedDevices.asStateFlow()
-
 
     private val foundDeviceReceiver = FoundDeviceReceiver { device ->
         _scannedDevices.update {devices ->
@@ -44,6 +43,10 @@ class AndroidBluetoothController(
             if(newDevice in devices) devices
             else devices + newDevice
         }
+    }
+
+    init {
+        updatePairedDevices()
     }
 
     override fun startDiscovery() {

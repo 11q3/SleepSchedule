@@ -1,10 +1,9 @@
-package com.example.myapplication.bluetooth.presentation
+package com.example.myapplication.presentation.viewmodels
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.bluetooth.BluetoothController
-import com.example.myapplication.bluetooth.presentation.BluetoothUIState
+import com.example.myapplication.infrastructure.controller.BluetoothController
+import com.example.myapplication.domain.model.BluetoothUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

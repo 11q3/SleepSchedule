@@ -1,5 +1,6 @@
-package com.example.myapplication.bluetooth
+package com.example.myapplication.infrastructure.controller
 
+import com.example.myapplication.domain.model.BTDevice
 import kotlinx.coroutines.flow.StateFlow
 
 interface BluetoothController  {
@@ -8,6 +9,5 @@ interface BluetoothController  {
 
     fun startDiscovery()
     fun stopDiscovery()
-
     fun release()
 }
