@@ -14,7 +14,6 @@ interface BluetoothController  {
 
     fun startDiscovery()
     fun stopDiscovery()
-    fun startBluetoothServer(): Flow<ConnectionResult>
     fun startConnection(device: BTDevice): Flow<ConnectionResult>
     fun closeConnection()
     fun release()

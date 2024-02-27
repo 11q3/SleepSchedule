@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
@@ -91,10 +92,13 @@ class Bluetooth : BaseFragment() {
         val adapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_list_item_1)
         devices.forEach { device ->
             val name = device.name ?: "Unknown"
-            if(name != "Unknown") {
                 adapter.add(name)
-            }
         }
         listView.adapter = adapter
+
+        listView.onItemClickListener = AdapterView.OnItemClickListener( ){ parent, view, position, id ->
+            val selectedDevice = devices[position]
+            bluetoothViewModel.startConnection(selectedDevice)
+        }
     }
 }

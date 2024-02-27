@@ -119,47 +119,15 @@ class AndroidBluetoothController(private val context: Context) : BluetoothContro
         bluetoothAdapter?.cancelDiscovery()
     }
 
-    override fun startBluetoothServer(): Flow<ConnectionResult> {
-        return flow {
-            if(!hasPermission(Manifest.permission.BLUETOOTH_CONNECT)) {
-                throw SecurityException("No BLUETOOTH_CONNECT permission")
-            }
-
-            currentServerSocket = bluetoothAdapter?.listenUsingRfcommWithServiceRecord(
-                "sleep_service",
-                 UUID.fromString(SERVICE_UUID)
-                )
-
-
-            var isWaitingForConnection = true
-
-            while(isWaitingForConnection) {
-                currentClientSocket = try {
-                    currentServerSocket?.accept()
-                } catch (e: IOException) {
-                    isWaitingForConnection = false
-                    null
-                }
-                emit(ConnectionResult.ConnectionEstablished)
-                currentClientSocket?.let {
-                    currentServerSocket?.close()
-                }
-            }
-        }.onCompletion {
-            closeConnection()
-        }.flowOn(Dispatchers.IO)
-    }
-
     override fun startConnection(device: BTDevice): Flow<ConnectionResult> {
         return flow {
             if(!hasPermission(Manifest.permission.BLUETOOTH_CONNECT)) {
                 throw SecurityException("No BLUETOOTH_CONNECT permission")
             }
 
-            val bluetoothDevice = bluetoothAdapter?.getRemoteDevice(device.address)
 
-
-            currentClientSocket = bluetoothDevice
+            currentClientSocket = bluetoothAdapter
+                ?.getRemoteDevice(device.address)
                 ?.createRfcommSocketToServiceRecord(
                     UUID.fromString(SERVICE_UUID)
                 )
